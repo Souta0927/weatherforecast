@@ -1,0 +1,61 @@
+<form action="/submit-data" method="post">
+    <input type="submit" value="データを送信">
+
+    <input type="reset" value="リセット">
+
+    <input type="button" value="汎用ボタン" onclick="alert('ボタンがクリックされました！');">
+</form>
+
+<form action="/submit-data" method="post">
+    <button type="submit">
+        ✅ **フォームを送信**
+    </button>
+
+    <button type="button" onclick="console.log('カスタムアクション');">
+        詳細を見る
+    </button>
+</form>
+
+<a href="https://example.com" role="button">外部サイトへ移動</a>
+
+<form>
+    <p>好きな色を一つ選んでください：</p>
+    <input type="radio" id="red" name="color" value="赤">
+    <label for="red">赤</label><br>
+
+    <input type="radio" id="blue" name="color" value="青" checked>
+    <label for="blue">青</label><br>
+</form>
+
+<form>
+    <p>好きな果物を全て選んでください：</p>
+    <input type="checkbox" id="apple" name="fruit" value="りんご">
+    <label for="apple">りんご</label><br>
+
+    <input type="checkbox" id="banana" name="fruit" value="バナナ" checked>
+    <label for="banana">バナナ</label><br>
+
+    <input type="checkbox" id="orange" name="fruit" value="みかん">
+    <label for="orange">みかん</label><br>
+</form>
+
+<form>
+    <label for="city-select">居住地を選んでください:</label>
+    <select id="city-select" name="city">
+        <option value="">選択してください</option>
+        <option value="tokyo">東京</option>
+        <option value="osaka" selected>大阪</option>
+        <option value="fukuoka">福岡</option>
+    </select>
+</form>
+
+<form>
+    <label for="multi-select">好きなプログラミング言語 (複数選択可):</label>
+    <select id="multi-select" name="language" multiple size="4">
+        <option value="html">HTML</option>
+        <option value="css">CSS</option>
+        <option value="javascript" selected>JavaScript</option>
+        <option value="python">Python</option>
+        <option value="ruby">Ruby</option>
+    </select>
+</form>

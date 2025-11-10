@@ -1,0 +1,153 @@
+/* 日本語フォントと基本設定 */
+:root {
+    font-family: 'Inter', 'Noto Sans JP', sans-serif;
+}
+
+body {
+    background-color: #f3f4f6; /* bg-gray-100 */
+    min-height: 100vh;
+    padding: 1rem; /* p-4 */
+}
+
+@media (min-width: 640px) {
+    body {
+        padding: 2rem; /* sm:p-8 */
+    }
+}
+
+/* ヘッダーとコンテナの基本スタイル */
+.container {
+    max-width: 72rem; /* max-w-6xl */
+    margin-left: auto;
+    margin-right: auto;
+}
+
+header {
+    text-align: center;
+    padding-top: 1.5rem;
+    padding-bottom: 1.5rem;
+    margin-bottom: 2rem;
+    background-color: white;
+    border-radius: 0.75rem; /* rounded-xl */
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* shadow-lg */
+}
+
+/* Pandasで生成される標準テーブル (daily_table) のスタイルをTailwindで上書き */
+.weather-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin-top: 1.5rem; /* mt-6 */
+    border-radius: 0.75rem; /* rounded-xl */
+    overflow: hidden; /* ボーダーと角丸を維持 */
+}
+
+.weather-table th, .weather-table td {
+    padding: 0.75rem 1rem; /* p-3 p-4 */
+    text-align: center;
+    border-bottom: 1px solid #e5e7eb; /* gray-200 */
+}
+
+.weather-table thead th {
+    background-color: #7cc9f5; 
+    color: white;
+    font-weight: 600; /* semibold */
+    text-transform: capitalize;
+    font-size: 0.875rem; /* sm */
+    letter-spacing: 0.05em; /* tracking-wider */
+}
+
+/* 最終行のボーダーを削除 */
+.weather-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.weather-table tbody tr:nth-child(odd) {
+    background-color: #f9fafb; /* gray-50 */
+}
+
+.weather-table tbody tr:hover {
+    background-color: #eff6ff; /* blue-50 */
+    transition: background-color 0.2s;
+}
+
+.weather-table tbody td {
+    font-size: 0.95rem;
+    color: #1f2937; /* gray-800 */
+}
+
+/* カスタム分析テーブル (custom-table) のスタイル */
+.custom-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin-top: 1.5rem; 
+    border-radius: 0.75rem; 
+    overflow: hidden;
+}
+
+.custom-table th, .custom-table td {
+    padding: 0.85rem 1rem; 
+    text-align: center;
+    border-bottom: 1px solid #e5e7eb; 
+}
+
+.custom-table thead th {
+    background-color: #4b5563; /* gray-700 */
+    color: white;
+    font-weight: 700; /* bold */
+    text-transform: capitalize;
+    font-size: 0.9rem;
+}
+
+.custom-table tbody tr:nth-child(odd) {
+    background-color: #fefefe; /* ほぼ白 */
+}
+
+.custom-table tbody tr:hover {
+    background-color: #f0fdf4; /* green-50 */
+    transition: background-color 0.2s;
+}
+
+/* --- 天気予報 (第5列) のスタイル --- */
+
+/* 降雨注意 (☔ 雨注意) の色付け */
+.custom-table td:nth-child(5):contains('☔ 雨注意') {
+    background-color: #e0f2fe; /* blue-100 */
+    font-weight: 600;
+    color: #0369a1; /* sky-700 */
+}
+
+/* 曇り時々雨 (☁️ 時々雨) の色付け */
+.custom-table td:nth-child(5):contains('☁️ 時々雨') {
+    background-color: #e5e7eb; /* gray-200 */
+    font-weight: 600;
+    color: #374151; /* gray-700 */
+}
+
+/* 晴れ時々曇り (🌤️ 晴れ時々曇り) の色付け */
+.custom-table td:nth-child(5):contains('🌤️ 晴れ時々曇り') {
+    background-color: #fef3c7; /* yellow-100 */
+    font-weight: 500;
+    color: #b45309; /* amber-700 */
+}
+
+/* 曇り判定 (☁️ 曇り) の色付け */
+.custom-table td:nth-child(5):contains('☁️ 曇り') {
+    background-color: #f3f4f6; /* gray-100 */
+    font-weight: 500;
+    color: #4b5563; /* gray-700 */
+}
+
+/* 晴れ判定 (🌞 晴れ) の色付け */
+.custom-table td:nth-child(5):contains('🌞 晴れ') {
+    background-color: #fffbeb; /* yellow-50 */
+    font-weight: 500;
+    color: #b45309; /* amber-700 */
+}
+
+/* 昼光時間・日照時間 (3, 4列目) の表示を強調 */
+.custom-table td:nth-child(3), .custom-table td:nth-child(4) {
+    font-weight: 500;
+    color: #16a34a; /* green-600 */
+}

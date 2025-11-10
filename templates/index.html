@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Forecast</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 外部CSSファイルへのリンクを追加 (Flaskのurl_forを使用) -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <!-- Chart.js CDN を追加 (グラフ描画ライブラリ) -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+    <!-- 【追加】Chart.js DataLabelsプラグインのCDNを追加 -->
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
+</head>
+<body>
+    
+    <div class="container">
+        <header class="text-center py-6 mb-8 bg-white rounded-xl shadow-lg">
+            <h1 class="text-4xl font-extrabold text-gray-800 tracking-tight">
+                <span class="text-blue-300">47</span> 都道府県の天気予報
+            </h1>
+            <p class="text-gray-700 mt-2">Open-Meteo APIを利用した日ごとの天気データ</p>
+        </header>
+
+        <!-- 予報地点選択のコントロールパネル -->
+        <div class="bg-white p-6 mb-8 rounded-xl shadow-lg flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0 md:space-x-6">
+            
+            <!-- 選択フォーム -->
+            <form method="POST" action="/" class="w-full flex items-center space-x-3">
+                <label for="prefecture_select" class="text-lg font-medium text-gray-700 whitespace-nowrap">予報地点を選ぶ:</label>
+                <select id="prefecture_select" name="prefecture_select" class="flex-grow p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 text-gray-800 bg-white">
+                    {% for item in prefecture_data %}
+                        <!-- 緯度降順（北→南）で表示 -->
+                        <option value="{{ item.display_name }}" {% if item.display_name == selected_location %}selected{% endif %}>
+                            {{ item.display_name }} (北緯 {{ "%.2f"|format(item.latitude) }}°)
+                        </option>
+                    {% endfor %}
+                </select>
+                <button type="submit" class="bg-black text-white p-3 rounded-full font-semibold hover:bg-gray-700 transition duration-150 shadow-md whitespace-nowrap">
+                    予報を取得
+                </button>
+            </form>
+            
+        </div>
+        
+        <!-- 気象データ表示カード -->
+        <div class="bg-white p-8 rounded-xl shadow-2xl">
+            <h2 class="text-3xl font-bold text-gray-900 mb-4 border-b pb-2">
+                {{ location_name }} の1週間天気予報
+            </h2>
+
+            <!-- メタ情報 -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6 text-gray-600">
+                <p class="p-2 bg-blue-50 rounded-full"><strong class="text-gray-800">座標:</strong> {{ location }}</p>
+                <p class="p-2 bg-blue-50 rounded-full"><strong class="text-gray-800">標高:</strong> {{ elevation }}</p>
+                <p class="p-2 bg-blue-50 rounded-full"><strong class="text-gray-800">タイムゾーン:</strong> {{ timezone_info }}</p>
+            </div>
+
+            <!-- グラフ表示エリアの追加 -->
+            <div class="mb-8 p-6 bg-gray-50 rounded-xl border border-gray-200">
+                <h3 class="text-2xl font-semibold text-gray-800 mb-4 border-b pb-2">気温と降水量の推移予報</h3>
+                <!-- グラフを描画するキャンバス -->
+                <canvas id="tempChart" class="max-h-[400px] w-full"></canvas>
+            </div>
+
+
+            <!-- 日ごとの天気データテーブル -->
+            <h3 class="text-2xl font-semibold text-gray-800 mb-4 mt-8">日ごとの詳細データ</h3>
+            <div class="mb-8 overflow-x-auto shadow-md rounded-xl">
+                <!-- daily_tableはPandas DataFrameのHTML出力が含まれます -->
+                {{ daily_table | safe }}
+            </div>
+            
+            <!-- 1時間ごとのデータに関するコメント (Pythonコードで生成された空のコメント) -->
+            {{ hourly_table | safe }}
+
+            <h3 class="text-2xl font-semibold text-gray-800 mb-4 mt-8 border-b pb-2">
+                気象情報からの天気予報
+            </h3>
+            <div class="overflow-x-auto shadow-md rounded-xl mb-8">
+                <!-- Pythonから渡されたカスタムテーブルのHTMLを表示 -->
+                {{ custom_analysis_table | safe }}
+            </div>
+
+
+
+        </div>
+        
+        <footer class="text-center mt-8 text-gray-500 text-sm">
+            <p>© 2023 Weather Forecast Viewer. Data provided by Open-Meteo.</p>
+        </footer>
+    </div>
+
+    <!-- チャート初期化のためのJavaScript -->
+    <script>
+        // DataLabelsプラグインをChart.jsに登録
+        Chart.register(ChartDataLabels);
+
+        // Flaskから渡されたJSONデータを取得し、パースする
+        const chartDataJson = JSON.parse('{{ chart_data_json | safe }}');
+        
+        const ctx = document.getElementById('tempChart');
+
+        new Chart(ctx, {
+            type: 'line', // デフォルトは折れ線グラフ
+            data: {
+                labels: chartDataJson.labels, // 日付 (MM/DD)
+                datasets: [
+                    {
+                        label: '最高気温 (°C)',
+                        data: chartDataJson.t_max,
+                        borderColor: 'rgb(255, 99, 132)', // 赤系 (最高気温)
+                        backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                        tension: 0.3, // 曲線の滑らかさ
+                        pointRadius: 6,
+                        pointHoverRadius: 8,
+                        fill: false,
+                        yAxisID: 'y', // 左側のY軸
+                        order: 1, // 棒グラフの上に表示
+                        // 【追加】最高気温のデータラベル設定
+                        datalabels: {
+                            align: 'top',
+                            color: 'rgb(255, 99, 132)',
+                            formatter: function(value, context) {
+                                return value.toFixed(1) + '°'; // 小数点1位までと°記号
+                            }
+                        }
+                    },
+                    {
+                        label: '最低気温 (°C)',
+                        data: chartDataJson.t_min,
+                        borderColor: 'rgb(54, 162, 235)', // 青系 (最低気温)
+                        backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                        tension: 0.3,
+                        pointRadius: 6,
+                        pointHoverRadius: 8,
+                        fill: false,
+                        yAxisID: 'y', // 左側のY軸
+                        order: 1, // 棒グラフの上に表示
+                        // 【追加】最低気温のデータラベル設定
+                        datalabels: {
+                            align: 'bottom',
+                            color: 'rgb(54, 162, 235)',
+                            formatter: function(value, context) {
+                                return value.toFixed(1) + '°'; // 小数点1位までと°記号
+                            }
+                        }
+                    },
+                    // 降水合計のデータセット（棒グラフとして第2軸に表示）
+                    {
+                        type: 'bar', // 棒グラフとして表示
+                        label: '降水合計 (mm)',
+                        data: chartDataJson.precipitation_sum,
+                        backgroundColor: 'rgba(75, 192, 192, 0.7)', // ティール系
+                        borderColor: 'rgb(75, 192, 192)',
+                        borderWidth: 1,
+                        yAxisID: 'y1', // 新しい第2軸
+                        order: 2, // 温度データの下に表示
+                        // 【追加】降水合計のデータラベル設定
+                        datalabels: {
+                            align: 'end', // 棒の上端
+                            anchor: 'end',
+                            color: 'rgb(75, 192, 192)',
+                            formatter: function(value, context) {
+                                // 0mmの場合は表示しない
+                                return value > 0 ? value.toFixed(1) : '';
+                            }
+                        }
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                // 降水量と気温で単位を分ける
+                                if (context.dataset.yAxisID === 'y1') {
+                                    return context.dataset.label + ': ' + context.parsed.y + ' mm';
+                                }
+                                return context.dataset.label + ': ' + context.parsed.y + ' °C';
+                            }
+                        }
+                    },
+                    // 【追加】DataLabelsのグローバル設定（ここでは個別のデータセットで設定するため最小限）
+                    datalabels: {
+                        font: {
+                            weight: 'bold',
+                            size: 10
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: '日付'
+                        }
+                    },
+                    // 左側のY軸: 気温用
+                    y: {
+                        title: {
+                            display: true,
+                            text: '気温 (°C)'
+                        },
+                        beginAtZero: false,
+                        position: 'left', // 左側に配置
+                        grid: {
+                            drawOnChartArea: true 
+                        }
+                    },
+                    // 右側のY軸: 降水量用
+                    y1: {
+                        type: 'linear',
+                        display: true,
+                        position: 'right', // 右側に配置
+                        title: {
+                            display: true,
+                            text: '降水合計 (mm)',
+                            color: 'rgb(75, 192, 192)'
+                        },
+                        min: 0, // 降水量が0から始まるようにする
+                        // 左軸とグリッド線を共有するため、ここでは描画しない
+                        grid: {
+                            drawOnChartArea: false, 
+                        },
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
