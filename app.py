@@ -191,23 +191,23 @@ def get_weather_data(latitude, longitude, location_name):
 
     # 1. 降水注意 (最優先: 5.0mm以上)
     is_rain_warning = custom_df['降水合計 (mm)'] >= 5.0
-    custom_df.loc[is_rain_warning, '天気予報'] = '☔ 雨注意'
+    custom_df.loc[is_rain_warning, '天気予報'] = '雨注意'
 
     # 2. 曇り時々雨 (次に優先: 日照率50%未満かつ 0mm < 降水 < 5.0mm)
     is_light_precip = (custom_df['降水合計 (mm)'] > 0.0) & (custom_df['降水合計 (mm)'] < 5.0)
 
     is_occasional_rain = is_low_sunshine & is_light_precip & (~is_rain_warning)
-    custom_df.loc[is_occasional_rain, '天気予報'] = '☁️ 時々雨'
+    custom_df.loc[is_occasional_rain, '天気予報'] = '曇り時々雨'
     
     # 3. 【NEW】晴れ時々曇り (降水 0.0mm かつ 50% <= 日照率 <= 90%)
     is_partly_cloudy_final = is_no_precip & is_partly_cloudy
     # 雨注意や時々雨に該当しない行にのみ適用
-    custom_df.loc[is_partly_cloudy_final & (~is_rain_warning) & (~is_occasional_rain), '天気予報'] = '🌤️ 晴れ時々曇り'
+    custom_df.loc[is_partly_cloudy_final & (~is_rain_warning) & (~is_occasional_rain), '天気予報'] = '晴れ時々曇り'
     
     # 4. 曇り (降水 0.0mm かつ 日照率50%未満)
     is_cloudy = is_no_precip & is_low_sunshine
     # 上記1, 2, 3の判定が適用されていない行にのみ適用
-    custom_df.loc[is_cloudy & (~is_rain_warning) & (~is_occasional_rain) & (~is_partly_cloudy_final), '天気予報'] = '☁️ 曇り'
+    custom_df.loc[is_cloudy & (~is_rain_warning) & (~is_occasional_rain) & (~is_partly_cloudy_final), '天気予報'] = '曇り'
 
     # 表示用のDataFrameを整形
     custom_df['日付'] = custom_df['日付'].dt.strftime('%m/%d') # 日付をMM/DD形式に
