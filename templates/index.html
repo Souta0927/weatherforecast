@@ -4,13 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Weather Forecast</title>
-    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- 外部CSSファイルへのリンクを追加 (Flaskのurl_forを使用) -->
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <!-- Chart.js CDN を追加 (グラフ描画ライブラリ) -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
-    <!-- 【追加】Chart.js DataLabelsプラグインのCDNを追加 -->
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
 </head>
 <body>
@@ -23,15 +19,12 @@
             <p class="text-gray-700 mt-2">Open-Meteo APIを利用した日ごとの天気データ</p>
         </header>
 
-        <!-- 予報地点選択のコントロールパネル -->
         <div class="bg-white p-6 mb-8 rounded-xl shadow-lg flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0 md:space-x-6">
             
-            <!-- 選択フォーム -->
             <form method="POST" action="/" class="w-full flex items-center space-x-3">
                 <label for="prefecture_select" class="text-lg font-medium text-gray-700 whitespace-nowrap">予報地点を選ぶ:</label>
                 <select id="prefecture_select" name="prefecture_select" class="flex-grow p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 text-gray-800 bg-white">
                     {% for item in prefecture_data %}
-                        <!-- 緯度降順（北→南）で表示 -->
                         <option value="{{ item.display_name }}" {% if item.display_name == selected_location %}selected{% endif %}>
                             {{ item.display_name }} (北緯 {{ "%.2f"|format(item.latitude) }}°)
                         </option>
@@ -44,42 +37,34 @@
             
         </div>
         
-        <!-- 気象データ表示カード -->
         <div class="bg-white p-8 rounded-xl shadow-2xl">
             <h2 class="text-3xl font-bold text-gray-900 mb-4 border-b pb-2">
                 {{ location_name }} の1週間天気予報
             </h2>
 
-            <!-- メタ情報 -->
             <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6 text-gray-600">
                 <p class="p-2 bg-blue-50 rounded-full"><strong class="text-gray-800">座標:</strong> {{ location }}</p>
                 <p class="p-2 bg-blue-50 rounded-full"><strong class="text-gray-800">標高:</strong> {{ elevation }}</p>
                 <p class="p-2 bg-blue-50 rounded-full"><strong class="text-gray-800">タイムゾーン:</strong> {{ timezone_info }}</p>
             </div>
 
-            <!-- グラフ表示エリアの追加 -->
             <div class="mb-8 p-6 bg-gray-50 rounded-xl border border-gray-200">
                 <h3 class="text-2xl font-semibold text-gray-800 mb-4 border-b pb-2">気温と降水量の推移予報</h3>
-                <!-- グラフを描画するキャンバス -->
                 <canvas id="tempChart" class="max-h-[400px] w-full"></canvas>
             </div>
 
 
-            <!-- 日ごとの天気データテーブル -->
             <h3 class="text-2xl font-semibold text-gray-800 mb-4 mt-8">日ごとの詳細データ</h3>
             <div class="mb-8 overflow-x-auto shadow-md rounded-xl">
-                <!-- daily_tableはPandas DataFrameのHTML出力が含まれます -->
                 {{ daily_table | safe }}
             </div>
             
-            <!-- 1時間ごとのデータに関するコメント (Pythonコードで生成された空のコメント) -->
             {{ hourly_table | safe }}
 
             <h3 class="text-2xl font-semibold text-gray-800 mb-4 mt-8 border-b pb-2">
                 気象情報からの天気予報
             </h3>
             <div class="overflow-x-auto shadow-md rounded-xl mb-8">
-                <!-- Pythonから渡されたカスタムテーブルのHTMLを表示 -->
                 {{ custom_analysis_table | safe }}
             </div>
 
@@ -92,7 +77,6 @@
         </footer>
     </div>
 
-    <!-- チャート初期化のためのJavaScript -->
     <script>
         // DataLabelsプラグインをChart.jsに登録
         Chart.register(ChartDataLabels);
