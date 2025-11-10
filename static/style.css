@@ -119,7 +119,7 @@ header {
 }
 
 /* 曇り時々雨 (🌧️ 曇り時々雨) の色付け */
-.custom-table td:nth-child(5):contains('🌧️ 曇り時々雨') { /* 👈 修正 */
+.custom-table td:nth-child(5):contains('☁️ 曇り時々雨') { /* 👈 修正 */
     background-color: #e5e7eb; /* gray-200 */
     font-weight: 600;
     color: #374151; /* gray-700 */

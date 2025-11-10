@@ -197,7 +197,7 @@ def get_weather_data(latitude, longitude, location_name):
     is_light_precip = (custom_df['降水合計 (mm)'] > 0.0) & (custom_df['降水合計 (mm)'] < 5.0)
 
     is_occasional_rain = is_low_sunshine & is_light_precip & (~is_rain_warning)
-    custom_df.loc[is_occasional_rain, '天気予報'] = '🌧️ 曇り時々雨' # 👈 修正: 絵文字追加
+    custom_df.loc[is_occasional_rain, '天気予報'] = '☁️ 曇り時々雨' # 👈 修正: 絵文字追加
     
     # 3. 【NEW】晴れ時々曇り (降水 0.0mm かつ 50% <= 日照率 <= 90%)
     is_partly_cloudy_final = is_no_precip & is_partly_cloudy
