@@ -112,35 +112,35 @@ header {
 /* --- 天気予報 (第5列) のスタイル --- */
 
 /* 降雨注意 (☔ 雨注意) の色付け */
-.custom-table td:nth-child(5):contains('☔ 雨注意') { /* 👈 修正 */
+.custom-table td:nth-child(5):contains('☔雨注意') { /* 👈 修正 */
     background-color: #e0f2fe; /* blue-100 */
     font-weight: 600;
     color: #0369a1; /* sky-700 */
 }
 
 /* 曇り時々雨 (🌧️ 曇り時々雨) の色付け */
-.custom-table td:nth-child(5):contains('☁️ 曇り時々雨') { /* 👈 修正 */
+.custom-table td:nth-child(5):contains('☁️曇り時々雨') { /* 👈 修正 */
     background-color: #e5e7eb; /* gray-200 */
     font-weight: 600;
     color: #374151; /* gray-700 */
 }
 
 /* 晴れ時々曇り (🌤️ 晴れ時々曇り) の色付け */
-.custom-table td:nth-child(5):contains('🌤️ 晴れ時々曇り') { /* 👈 修正 */
+.custom-table td:nth-child(5):contains('🌤️晴れ時々曇り') { /* 👈 修正 */
     background-color: #fef3c7; /* yellow-100 */
     font-weight: 500;
     color: #b45309; /* amber-700 */
 }
 
 /* 曇り判定 (☁️ 曇り) の色付け */
-.custom-table td:nth-child(5):contains('☁️ 曇り') { /* 👈 修正 */
+.custom-table td:nth-child(5):contains('☁️曇り') { /* 👈 修正 */
     background-color: #f3f4f6; /* gray-100 */
     font-weight: 500;
     color: #4b5563; /* gray-700 */
 }
 
 /* 晴れ判定 (🌞 晴れ) の色付け */
-.custom-table td:nth-child(5):contains('🌞 晴れ') { /* 👈 修正 */
+.custom-table td:nth-child(5):contains('🌞晴れ') { /* 👈 修正 */
     background-color: #fffbeb; /* yellow-50 */
     font-weight: 500;
     color: #b45309; /* amber-700 */
